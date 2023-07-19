@@ -4,18 +4,15 @@ const OPENAI = new OpenAIApi(configuration);
 
 const translateText = async (text, targetLang) => {
     try {
-        const response = await OPENAI.createCompletion({
-            model: "text-davinci-003",
-            prompt: `Translate the given text to ${targetLang} language: ${text}`,
-            temperature: 0.3,
-            max_tokens: 100,
-            top_p: 1.0,
-            frequency_penalty: 0.0,
-            presence_penalty: 0.0,
+        const completion = await OPENAI.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { "role": "system", "content": "You are a helpful assistant." }, 
+                { "role": "user", "content": `Translate the following text to ${targetLang}: ${text}` }
+            ],
         });
-
-        let str = response.data.choices[0].text;
-        str = str[0] == "." ? str.substring(3) : str.substring(2);
+        
+        let str = completion.data.choices[0].message.content;
         str = text[text.length - 1] != "." ? str.substring(0, str.length - 1) : str;
 
         return str;
