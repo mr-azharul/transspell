@@ -1,7 +1,7 @@
 {
-  "name": "catocial",
+  "name": "transspell",
   "version": "1.0.0",
-  "description": "A social media management and analytics tool",
+  "description": "AI powered translator",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "mongoose": "^7.0.3",
+    "multer": "^1.4.5-lts.1",
     "openai": "^3.3.0"
   },
   "devDependencies": {

@@ -12,10 +12,10 @@ module.exports = {
                 req.id = auth.request.id;
                 return next();
             } catch (error) {
-                return res.status(401).json({ msg: "Unauthorized!", data: error });
+                return res.status(401).json({ msg: "UNAUTHORIZED", data: error });
             }
         }
         
-        return res.status(401).json({ msg: "Unauthorized!", data: {} });
+        return res.status(401).json({ msg: "UNAUTHORIZED", data: {} });
     }
 };

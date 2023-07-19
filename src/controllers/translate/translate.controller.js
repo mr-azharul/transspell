@@ -1,21 +1,50 @@
 const translate = require("../../services/translate/translate.services");
-const supportedLanguages = ["Afrikaans", "Arabic", "Armenian", "Azerbaijani", "Belarusian", "Bosnian", "Bulgarian", "Catalan", "Chinese", "Croatian", "Czech", "Danish",
-    "Dutch", "English", "Estonian", "Finnish", "French", "Galician", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese",
-    "Kannada", "Kazakh", "Korean", "Latvian", "Lithuanian", "Macedonian", "Malay", "Marathi", "Maori", "Nepali", "Norwegian", "Persian", "Polish", "Portuguese", "Romanian",
-    "Russian", "Serbian", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tagalog", "Tamil", "Thai", "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"];
-
+const supportedLanguages = require("../../config/languages.json");
 
 const textTranslation = async (req, res) => {
     try {
         const { text, targetLang } = req.body;
-        const translation = await translate.translateText(text, targetLang);
+        if (supportedLanguages[targetLang]) {
+            const translation = await translate.translateText(text, supportedLanguages[targetLang]);
+            return res.status(200).json({ msg: "OK", data: translation });
+        }
 
-        return res.status(200).json({ msg: "OK", data: translation });
+        return res.status(400).json({ msg: "NOT_SUPPORTED_LANGUAGE", data: { targetLang } });
     } catch (err) {
-        return res.status(500).json({ msg: err.message, data: err });
+        return res.status(500).json({ msg: "SOMETHING_WENT_WRONG", data: err.stack });
+    }
+}
+
+const fileTranslation = async (req, res) => {
+    try {
+        let response = [];
+        const { targetLang } = req.body;
+        if (supportedLanguages[targetLang]) {
+            for (let file of req.files) {
+                const data = file.buffer.toString('utf8');
+                const translation = await translate.translateText(data, supportedLanguages[targetLang]);
+                response.push(translation);
+            }
+
+            return res.status(200).json({ msg: "OK", data: response });
+        }
+
+        return res.status(400).json({ msg: "NOT_SUPPORTED_LANGUAGE", data: { targetLang } });
+    } catch (err) {
+        return res.status(500).json({ msg: "SOMETHING_WENT_WRONG", data: err.stack });
+    }
+}
+
+const supportedLngList = async (req, res) => {
+    try {
+        return res.status(200).json({ msg: "OK", data: supportedLanguages });
+    } catch (err) {
+        return res.status(500).json({ msg: "SOMETHING_WENT_WRONG", data: err.stack });
     }
 }
 
 module.exports = {
-    textTranslation
+    textTranslation,
+    fileTranslation,
+    supportedLngList
 }
